@@ -1,4 +1,4 @@
-﻿using TMPro;
+using TMPro;
 using UnityEngine;
 
 namespace RTLTMPro
@@ -24,6 +24,8 @@ namespace RTLTMPro
                 UpdateText();
             }
         }
+
+        public string rtlText;
 
         public string OriginalText
         {
@@ -76,11 +78,14 @@ namespace RTLTMPro
             {
                 if (forceFix == value)
                     return;
+                
 
                 forceFix = value;
                 havePropertiesChanged = true;
             }
         }
+
+        [SerializeField] protected bool enalbeRTL = true;
 
         [SerializeField] protected bool preserveNumbers;
 
@@ -112,15 +117,16 @@ namespace RTLTMPro
         {
             if (originalText == null)
                 originalText = "";
-
-            if (ForceFix == false && TextUtils.IsRTLInput(originalText) == false)
+            
+            if (!enalbeRTL || (ForceFix == false && TextUtils.IsRTLInput(originalText) == false))
             {
-                isRightToLeftText = false;
+                rtlText = string.Empty;
                 base.text = originalText;
-            } else
+            }
+            else
             {
-                isRightToLeftText = true;
-                base.text = GetFixedText(originalText);
+                rtlText = GetFixedText(originalText);
+                base.text = rtlText;
             }
 
             havePropertiesChanged = true;
@@ -133,7 +139,6 @@ namespace RTLTMPro
 
             finalText.Clear();
             RTLSupport.FixRTL(input, finalText, farsi, fixTags, preserveNumbers);
-            finalText.Reverse();
             return finalText.ToString();
         }
     }
